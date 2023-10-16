@@ -5099,6 +5099,7 @@ static cl_error_t cli_loaddbdir(const char *dirname, struct cl_engine *engine, u
 #define DB_LOAD_PRIORITY_DAILY_CFG 5
 #define DB_LOAD_PRIORITY_CRB 6
 #define DB_LOAD_PRIORITY_NORMAL 7
+#define DB_LOAD_BLOCKED_ATTACHMENT 8
 
         if (cli_strbcasestr(dent->d_name, ".ign") || cli_strbcasestr(dent->d_name, ".ign2")) {
             /* load .ign and .ign2 files first */
@@ -5173,6 +5174,14 @@ static cl_error_t cli_loaddbdir(const char *dirname, struct cl_engine *engine, u
              * rules that trust the certs used to sign the catalog files.
              * Therefore, we need to ensure the .crb rules are loaded prior */
             load_priority = DB_LOAD_PRIORITY_CRB;
+
+            engine->num_total_signatures += count_line_based_signatures(dbfile);
+
+        } else if (cli_strbcasestr(dent->d_name, "BlockedAttachment")) {
+            /* .cat files cannot be loaded successfully unless there are .crb
+             * rules that trust the certs used to sign the catalog files.
+             * Therefore, we need to ensure the .crb rules are loaded prior */
+            load_priority = DB_LOAD_BLOCKED_ATTACHMENT;
 
             engine->num_total_signatures += count_line_based_signatures(dbfile);
 
