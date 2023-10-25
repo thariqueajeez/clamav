@@ -706,6 +706,13 @@ static const char *parse_dispatch_cmd(client_conn_t *conn, struct fd_buf *buf, s
             cmdlen++;
             logg(LOGG_DEBUG_NV, "RECVTH: FILDES command complete\n");
         }
+        if(cmdtype == COMMAND_INSTREAM){
+            if (argument != NULL && strlen(argument) > 0 && !strcmp(argument, "1")) {
+                conn->is_all_match = 1;
+            } else{
+                conn->is_all_match = 0;
+            }
+        }
         conn->term = term;
         buf->term  = term;
 

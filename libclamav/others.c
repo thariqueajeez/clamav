@@ -1475,6 +1475,26 @@ const char *cli_get_last_virus_str(const cli_ctx *ctx)
     return "";
 }
 
+const char *cli_get_all_virus(const cli_ctx *ctx)
+{
+    if (!ctx || !ctx->evidence) {
+        return NULL;
+    }
+
+    return evidence_get_all_alert(ctx->evidence);
+    
+}
+
+const char *cli_get_all_virus_str(const cli_ctx *ctx)
+{
+    const char *ret;
+
+    if (NULL != (ret = cli_get_all_virus(ctx))) {
+        return ret;
+    }
+    return "";
+}
+
 cl_error_t cli_recursion_stack_push(cli_ctx *ctx, cl_fmap_t *map, cli_file_t type, bool is_new_buffer, uint32_t attributes)
 {
     cl_error_t status = CL_SUCCESS;

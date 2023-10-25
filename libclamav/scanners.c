@@ -5611,7 +5611,11 @@ static cl_error_t scan_common(cl_fmap_t *map, const char *filepath, const char *
 
     // If any alerts occurred, set the output pointer to the "latest" alert signature name.
     if (0 < evidence_num_alerts(ctx.evidence)) {
-        *virname = cli_get_last_virus_str(&ctx);
+        if(scanoptions->general & CL_SCAN_GENERAL_ALLMATCHES){
+            *virname = cli_get_all_virus_str(&ctx);
+        } else {
+            *virname = cli_get_last_virus_str(&ctx);
+        }
         verdict  = CL_VIRUS;
     }
 

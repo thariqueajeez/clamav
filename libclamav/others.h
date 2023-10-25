@@ -749,6 +749,8 @@ void cli_append_potentially_unwanted_if_heur_exceedsmax(cli_ctx *ctx, char *virn
 
 const char *cli_get_last_virus(const cli_ctx *ctx);
 const char *cli_get_last_virus_str(const cli_ctx *ctx);
+const char *cli_get_all_virus(const cli_ctx *ctx);
+const char *cli_get_all_virus_str(const cli_ctx *ctx);
 void cli_virus_found_cb(cli_ctx *ctx, const char *virname);
 
 /**

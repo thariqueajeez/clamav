@@ -288,6 +288,7 @@ CLAMAV_PRIVATE {
     cli_get_debug_flag;
     cli_get_last_virus_str;
     cli_getdsig;
+    cli_get_all_virus_str;
     cli_infomsg_simple;
     cli_set_debug_flag;
     fmap_dump_to_file;

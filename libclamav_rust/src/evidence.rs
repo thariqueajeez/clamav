@@ -20,7 +20,7 @@
  *  MA 02110-1301, USA.
  */
 
-use std::{collections::HashMap, ffi::CStr, mem::ManuallyDrop, os::raw::c_char};
+ use std::{collections::HashMap, ffi::{CStr, CString}, mem::ManuallyDrop, os::raw::c_char};
 
 use log::{debug, error, warn};
 use thiserror::Error;
@@ -122,6 +122,44 @@ pub unsafe extern "C" fn _evidence_get_last_alert(evidence: sys::evidence_t) -> 
         // no alerts, return NULL
         std::ptr::null()
     }
+}
+
+#[export_name = "evidence_get_all_alert"]
+pub unsafe extern "C" fn _evidence_get_all_alertt(evidence: sys::evidence_t) -> *const c_char {
+    let evidence = ManuallyDrop::new(Box::from_raw(evidence as *mut Evidence));
+    if evidence.strong.values().count()>0 {
+        let concatenated_alerts: String = evidence
+        .strong
+        .values()
+        .flatten()
+        .map(|meta| CStr::from_ptr(meta.static_virname).to_str().unwrap_or(""))
+        .collect::<Vec<&str>>()
+        .join("###");
+        if !concatenated_alerts.is_empty() {
+            CString::new(concatenated_alerts).unwrap().into_raw()
+        } else {
+            // no alerts, return NULL
+            std::ptr::null()
+        }
+    } else if evidence.pua.values().count()>0 {
+        let concatenated_alerts: String = evidence
+        .pua
+        .values()
+        .flatten()
+        .map(|meta| CStr::from_ptr(meta.static_virname).to_str().unwrap_or(""))
+        .collect::<Vec<&str>>()
+        .join("###");
+        if !concatenated_alerts.is_empty() {
+            CString::new(concatenated_alerts).unwrap().into_raw()
+        } else {
+            // no alerts, return NULL
+            std::ptr::null()
+        }
+    } else {
+        // no alerts, return NULL
+        std::ptr::null()
+    }
+    
 }
 
 /// C interface to get a string name for one of the alerts.

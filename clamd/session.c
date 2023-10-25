@@ -94,7 +94,7 @@ static struct {
     {CMD14, sizeof(CMD14) - 1, COMMAND_FILDES, 0, 1, FEATURE_FDPASSING},
     {CMD15, sizeof(CMD15) - 1, COMMAND_STATS, 0, 0, 1},
     {CMD16, sizeof(CMD16) - 1, COMMAND_IDSESSION, 0, 0, 1},
-    {CMD17, sizeof(CMD17) - 1, COMMAND_INSTREAM, 0, 0, 1},
+    {CMD17, sizeof(CMD17) - 1, COMMAND_INSTREAM, 1, 0, 1},
     {CMD19, sizeof(CMD19) - 1, COMMAND_DETSTATSCLEAR, 0, 1, 1},
     {CMD20, sizeof(CMD20) - 1, COMMAND_DETSTATS, 0, 1, 1},
     {CMD21, sizeof(CMD21) - 1, COMMAND_ALLMATCHSCAN, 1, 0, 1}};
@@ -108,7 +108,9 @@ enum commands parse_command(const char *cmd, const char **argument, int oldstyle
         if (!strncmp(cmd, commands[i].cmd, len)) {
             const char *arg = cmd + len;
             if (commands[i].need_arg) {
-                if (!*arg) { /* missing argument */
+                if(!*arg && commands[i].cmdtype == COMMAND_INSTREAM){
+                    *argument = NULL;
+                } else if (!*arg) { /* missing argument */
                     logg(LOGG_DEBUG_NV, "Command %s missing argument!\n", commands[i].cmd);
                     return COMMAND_UNKNOWN;
                 }
@@ -329,6 +331,9 @@ int command(client_conn_t *conn, int *virus)
             return 0;
         case COMMAND_INSTREAMSCAN:
             thrmgr_setactivetask(NULL, "INSTREAM");
+            if(conn->is_all_match){
+                options.general |= CL_SCAN_GENERAL_ALLMATCHES;
+            }
             ret = scanfd(conn, NULL, engine, &options, opts, desc, 1);
             if (ret == CL_VIRUS) {
                 *virus = 1;
