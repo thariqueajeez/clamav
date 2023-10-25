@@ -89,6 +89,7 @@ typedef struct client_conn_tag {
     enum commands cmdtype;
     char *filename;
     int scanfd;
+    int is_all_match;
     int sd;
     struct cl_scan_options *options;
     const struct optstruct *opts;
